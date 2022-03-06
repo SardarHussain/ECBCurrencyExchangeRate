@@ -20,14 +20,18 @@ public class ForexExchangeData
 
     public static void main( String[] args ) throws IOException, CsvValidationException, Exception
     {
+        ForexExchangeData forexExchangeData = new ForexExchangeData();
+        String filePath = forexExchangeData.getClass()
+                                           .getClassLoader()
+                                           .getResource( "eurofxref-hist.csv" ).getPath();
 
-        ExchangeRateService exchangeRateService = new ExchangeRateServiceImpl( "C:\\Users\\sardarh\\Desktop\\Data\\sardar\\Formedix\\eurofxref-hist\\eurofxref-hist.csv" );
+        ExchangeRateService exchangeRateService = new ExchangeRateServiceImpl( filePath);//"C:\\Users\\sardarh\\Desktop\\Data\\sardar\\Formedix\\eurofxref-hist\\eurofxref-hist.csv" );
 
         System.out.println( exchangeRateService.getExchangeRate( "1900-02-18" ) );
 
         System.out.println( exchangeRateService.getExchangeRateConversion( "USD", "GBP", "100", "2022-02-18" ) );
         // System.out.println( exchangeRateService.getExchangeRate(  "2022-02-18" ));
-        System.out.println( exchangeRateService.getAverageExchangeRate( "2022-01-01", "2022-02-18", "USD" ) );
+        System.out.println( exchangeRateService.getAverageExchangeRate( "2022-01-01", "2022-03-04", "USD" ) );
         // System.out.println(exchangeRateService.getHighestExchangeRate( "01-01-2022", "2022-02-18", "USD" ));
         System.out.println( exchangeRateService.getHighestExchangeRate( "2022-01-01", "2022-02-18", "USD" ) );
 
