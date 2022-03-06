@@ -18,6 +18,7 @@ import exception.CurrencyExchangeRateException;
 import exception.DateNotValidException;
 import model.ExchangeRate;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import repository.ForexExchangeRateDataSource;
 import utility.DateValidator;
 
@@ -56,6 +57,9 @@ public class ExchangeRateServiceImpl implements ExchangeRateService
     @Override
     public String getExchangeRateConversion( String sourceCurrencyCode, String targetCurrencyCode, String sourceAmount, String date ) throws CurrencyExchangeRateException
     {
+        if( !NumberUtils.isParsable( sourceAmount ) )
+            throw new CurrencyExchangeRateException( String.format( "the source amount %s is not a valid number", sourceAmount ) );
+
         BigDecimal sourceCurrExchangeRate = BigDecimal.ONE;
         BigDecimal targetCurrExchangeRate = BigDecimal.ONE;
 
@@ -129,6 +133,9 @@ public class ExchangeRateServiceImpl implements ExchangeRateService
     @Override
     public String getAverageExchangeRate( String fromDate, String toDate, String currencyCode ) throws CurrencyExchangeRateException
     {
+        if ( !isCurrencyCodeExists( currencyCode ) )
+            throw new CurrencyExchangeRateException( String.format( "Exchange rate for currency code %s does not exist", currencyCode ) );
+
         LocalDate fromDttm = getDate( fromDate );
         LocalDate toDttm = getDate( toDate );
 

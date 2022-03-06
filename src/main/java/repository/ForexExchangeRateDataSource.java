@@ -94,7 +94,7 @@ public final class ForexExchangeRateDataSource
             exchangeRate.setCurrencyCode( tableFields[ i ] );
             exchangeRate.setDate( LocalDate.parse( row[ 0 ] ) );
 
-            if ( NumberUtils.isCreatable( row[ i ] ) )
+            if ( NumberUtils.isParsable( row[ i ] ) )
                 exchangeRate.setRate( new BigDecimal( row[ i ] ) );
             else
                 exchangeRate.setRate( null );
