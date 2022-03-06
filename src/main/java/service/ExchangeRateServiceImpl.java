@@ -57,13 +57,19 @@ public class ExchangeRateServiceImpl implements ExchangeRateService
     @Override
     public String getExchangeRateConversion( String sourceCurrencyCode, String targetCurrencyCode, String sourceAmount, String date ) throws CurrencyExchangeRateException
     {
-        BigDecimal sourceCurrExchangeRate = getExchangeRateValue( sourceCurrencyCode, getDate( date ) );
-        BigDecimal targetCurrExchangeRate = getExchangeRateValue( targetCurrencyCode, getDate( date ) );
+        BigDecimal sourceCurrExchangeRate = BigDecimal.ONE;
+        BigDecimal targetCurrExchangeRate = BigDecimal.ONE;
+
+        if ( !StringUtils.equals( "EUR", sourceCurrencyCode ) )
+            sourceCurrExchangeRate = getExchangeRateValue( sourceCurrencyCode, getDate( date ) );
+
+        if ( !StringUtils.equals( "EUR", targetCurrencyCode ) )
+            targetCurrExchangeRate = getExchangeRateValue( targetCurrencyCode, getDate( date ) );
 
         if ( sourceCurrExchangeRate == null && !StringUtils.equals( sourceCurrencyCode, "EUR" ) )
-            throw new CurrencyExchangeRateException( "the exchange rate for the " + sourceCurrencyCode + " is not available on " + date );
+            throw new CurrencyExchangeRateException( String.format( "the exchange rate for the %s is not available on %s", sourceCurrencyCode, date ) );
         if ( targetCurrExchangeRate == null && !StringUtils.equals( targetCurrencyCode, "EUR" ) )
-            throw new CurrencyExchangeRateException( "the exchange rate for the " + targetCurrencyCode + " is not available on " + date );
+            throw new CurrencyExchangeRateException( String.format( "the exchange rate for the %s is not available on %s", targetCurrencyCode, date ) );
 
         BigDecimal srcAmount = new BigDecimal( sourceAmount );
         BigDecimal targetAmount;
@@ -155,12 +161,10 @@ public class ExchangeRateServiceImpl implements ExchangeRateService
 
     private Boolean isCurrencyCodeExists( String currencyCode )
     {
-        if ( currencyCode == null && StringUtils.equals( currencyCode, "" ) )
+        if ( currencyCode == null || StringUtils.equals( currencyCode, "" ) )
             return false;
-        String currCode = Stream.of( availableCurrencies ).filter( s -> StringUtils.equals( s, currencyCode ) ).findAny().get();
-        if ( currencyCode.equals( currCode ) )
-            return true;
-        return false;
+
+        return List.of(availableCurrencies).contains( currencyCode );
 
     }
 }
