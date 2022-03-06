@@ -40,7 +40,7 @@ public interface ExchangeRateService
      * @param fromDate     start date in the period, a given currency exchange rate is available for
      * @param toDate       end date in the period, a given currency exchange rate is available for
      * @param currencyCode 3-letter code for the source currency
-     * @return the highest reference exchange rate the given currency has achieved
+     * @return the highest reference exchange rate the given currency has achieved along with the date
      * @throws CurrencyExchangeRateException if anything goes wrong
      */
 
