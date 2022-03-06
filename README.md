@@ -1,5 +1,5 @@
 # ECBCurrencyExchangeRate
-This is a simpel program that reads the ECB historical forex exchange csv data in memory collection.
+This is a simple program that reads the ECB historical forex exchange csv data in memory collection.
 A java class (ExchangeRateServiceImpl.java) is implemented that provides the following functionalities using a functional style retrieval from the collection.
 
 1. It allows to retrieve the reference rate data for a given Date for all
