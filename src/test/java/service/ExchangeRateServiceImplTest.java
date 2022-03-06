@@ -15,7 +15,7 @@ class ExchangeRateServiceImplTest
     ExchangeRateService exchangeRateService;
 
     @BeforeEach
-    void setUp() throws Exception
+    void setUp()
     {
         String filePath = getClass()
                 .getClassLoader()
@@ -58,8 +58,8 @@ class ExchangeRateServiceImplTest
     {
         Map<String, Map<String, String>> highestExchangeRateExpected = new HashMap<>();
         Map<String, String> currencyVal = new HashMap<>();
-        currencyVal.put( "USD", "1.1464" );
-        highestExchangeRateExpected.put( "2022-02-04", currencyVal );
+        currencyVal.put( "USD", "1.126" );
+        highestExchangeRateExpected.put( "2022-02-01", currencyVal );
 
         Map<String, Map<String, String>> highestExchangeRateActual = exchangeRateService.getHighestExchangeRate( "2022-02-01", "2022-02-18", "USD" );
 
@@ -70,7 +70,7 @@ class ExchangeRateServiceImplTest
     void getAverageExchangeRateTest()
     {
         String averageExchangeRateActual = exchangeRateService.getAverageExchangeRate( "2022-02-01", "2022-02-10", "DKK" );
-        String averageExchangeRateExpected = "7.4416";
+        String averageExchangeRateExpected = "7.44164";
         assertEquals( averageExchangeRateExpected, averageExchangeRateActual );
     }
 }

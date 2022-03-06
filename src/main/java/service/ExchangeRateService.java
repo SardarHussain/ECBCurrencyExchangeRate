@@ -1,6 +1,7 @@
 package service;
 
 import java.util.Map;
+
 import exception.CurrencyExchangeRateException;
 
 /**
@@ -58,28 +59,3 @@ public interface ExchangeRateService
 
     String getAverageExchangeRate( String fromDate, String toDate, String currencyCode ) throws CurrencyExchangeRateException;
 }
-    /**
-     * Get historical exchange rate
-     * @param fromCurrency the source currency
-     * @param toCurrency the target currency
-     * @param date the date
-     * @return the exchange rate
-     * @throws ExchangeRateException if anything goes wrong
-     */
-    /*
-    default double getExchangeRate( Currency fromCurrency, Currency toCurrency, LocalDate date) throws ExchangeRateException {
-        return getExchangeRate(fromCurrency.getCurrencyCode(), toCurrency.getCurrencyCode(), date);
-    }
-
-    /**
-     * Get current exchange rate
-     * @param fromCurrency the source currency
-     * @param toCurrency the target currency
-     * @return the exchange rate
-     * @throws ExchangeRateException if anything goes wrong
-     */
-    /*
-    default double getCurrentExchangeRate(Currency fromCurrency, Currency toCurrency) throws ExchangeRateException {
-        return getCurrentExchangeRate(fromCurrency.getCurrencyCode(), toCurrency.getCurrencyCode());
-    }
-    */

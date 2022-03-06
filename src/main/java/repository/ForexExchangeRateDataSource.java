@@ -4,7 +4,6 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import model.ExchangeRate;
 
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,36 +19,36 @@ import java.util.stream.Collectors;
 import exception.CurrencyExchangeRateException;
 import org.apache.commons.lang3.math.NumberUtils;
 
-public final class HistoricalExchangeRateData
+public final class ForexExchangeRateDataSource
 {
     private String[] tableFields;
-    private static HistoricalExchangeRateData historicalExchangeRateData;
+    private static ForexExchangeRateDataSource forexExchangeRateDataSource;
 
-    private HistoricalExchangeRateData()
+    private ForexExchangeRateDataSource()
     {
 
     }
 
-    public static synchronized HistoricalExchangeRateData getInstance()
+    public static synchronized ForexExchangeRateDataSource getInstance()
     {
-        if ( historicalExchangeRateData == null )
+        if ( forexExchangeRateDataSource == null )
         {
-            historicalExchangeRateData = new HistoricalExchangeRateData();
+            forexExchangeRateDataSource = new ForexExchangeRateDataSource();
         }
 
-        return historicalExchangeRateData;
+        return forexExchangeRateDataSource;
     }
 
-    public Map<LocalDate, List<ExchangeRate>> getHistoricalExchangeRateData( String filePath ) throws Exception
+    public Map<LocalDate, List<ExchangeRate>> getHistoricalExchangeRateData( String filePath )
     {
         return readCSVFile( filePath );
     }
 
-    private Map<LocalDate, List<ExchangeRate>> readCSVFile( String filePath ) //throws IOException, FileNotFoundException, CsvValidationException
+    private Map<LocalDate, List<ExchangeRate>> readCSVFile( String filePath )
     {
         try
         {
-            CSVReader reader = new CSVReader( new FileReader( "C:\\Users\\sardarh\\Desktop\\Data\\sardar\\Formedix\\eurofxref-hist\\eurofxref-hist.csv" ), ',' );
+            CSVReader reader = new CSVReader( new FileReader( filePath ), ',' );
             List<String[]> conversionRateData = reader.readAll();
 
             if ( conversionRateData == null )
