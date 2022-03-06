@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="ECBCurrencyExchangeRate" target="9" />
+      <module name="ECBCurrencyExchangeRate" target="13" />
     </bytecodeTargetLevel>
   </component>
 </project>

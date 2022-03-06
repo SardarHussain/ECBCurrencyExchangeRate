@@ -1,6 +1,7 @@
 package repository;
 
 import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import model.ExchangeRate;
 
 import java.io.FileNotFoundException;
@@ -18,26 +19,43 @@ import java.util.stream.Collectors;
 import exception.CurrencyExchangeRateException;
 import org.apache.commons.lang3.math.NumberUtils;
 
-public class HistoricalExchangeRateData
+public final class HistoricalExchangeRateData
 {
     private String[] tableFields;
+    private static HistoricalExchangeRateData historicalExchangeRateData;
 
-    public Map<LocalDate, List<ExchangeRate>> getHistoricalExchangeRateData( String filePath )
+    private HistoricalExchangeRateData()
+    {
+
+    }
+
+    public static synchronized HistoricalExchangeRateData getInstance()
+    {
+        if ( historicalExchangeRateData == null )
+        {
+            historicalExchangeRateData = new HistoricalExchangeRateData();
+        }
+
+        return historicalExchangeRateData;
+    }
+
+    public Map<LocalDate, List<ExchangeRate>> getHistoricalExchangeRateData( String filePath ) throws Exception
     {
         return readCSVFile( filePath );
     }
 
-    private Map<LocalDate, List<ExchangeRate>> readCSVFile( String filePath )
+    private Map<LocalDate, List<ExchangeRate>> readCSVFile( String filePath ) //throws IOException, FileNotFoundException, CsvValidationException
     {
         try
         {
-            CSVReader reader = new CSVReader( new FileReader( filePath ) );//"C:\\Users\\sardarh\\Desktop\\Data\\sardar\\Formedix\\eurofxref-hist\\eurofxref-hist.csv" ), ',' );
+            CSVReader reader = new CSVReader( new FileReader( "C:\\Users\\sardarh\\Desktop\\Data\\sardar\\Formedix\\eurofxref-hist\\eurofxref-hist.csv" ), ',' );
             List<String[]> conversionRateData = reader.readAll();
 
-            if ( ( tableFields = conversionRateData.get( 0 ) ) == null )
+            if ( conversionRateData == null )
             {
-                throw new Exception( "The File " + filePath + " is not valid" );
+                throw new CsvValidationException( "The File " + filePath + " is not valid" );
             }
+            tableFields = conversionRateData.get( 0 );
 
             return conversionRateData.stream()
                                      .skip( 1 )
@@ -47,24 +65,23 @@ public class HistoricalExchangeRateData
         }
         catch ( FileNotFoundException e )
         {
-            e.printStackTrace();
+            throw new CurrencyExchangeRateException( e );
         }
         catch ( IOException e )
         {
-            e.printStackTrace();
+            throw new CurrencyExchangeRateException( e );
         }
         catch ( Exception e )
         {
-            e.printStackTrace();
+            throw new CurrencyExchangeRateException( e );
         }
-
-        return null;
     }
 
     private List<ExchangeRate> getExchangeRates( String[] row )
     {
         if ( row.length != tableFields.length )
-            throw new CurrencyExchangeRateException( "exchange rate values in the following row is not equivalent to the provided currency codes: \n" + Arrays.asList( row ) );
+            throw new CurrencyExchangeRateException( "Bad row in csv file: \n The no of exchange rate values in the following row is not equal the no of provided currency codes: \n" + Arrays.asList( row ) );
+
         List<ExchangeRate> exchangeRates = new ArrayList<>();
 
         //skip the Date filed

@@ -12,7 +12,6 @@ public class ExchangeRate
     private String currencyCode;
     private BigDecimal rate;
 
-
     public void setDate( LocalDate date )
     {
         this.date = date;

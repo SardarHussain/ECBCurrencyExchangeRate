@@ -12,5 +12,4 @@ public class CurrencyExchangeRateException extends RuntimeException
     public CurrencyExchangeRateException( Throwable t) {
         super(t);
     }
-
 }

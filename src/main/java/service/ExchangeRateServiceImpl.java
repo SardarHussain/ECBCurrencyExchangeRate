@@ -5,7 +5,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,18 +32,24 @@ public class ExchangeRateServiceImpl implements ExchangeRateService
 
     // private static final String HISTORICAL_RATE_URL = "http://currencies.apps.grandtrunk.net/getrate/%s/%s/%s";
 
-    private String[] AvailableCurrencies;
     private Map<LocalDate, List<ExchangeRate>> exchangeRateData;
     private String[] availableCurrencies;
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern( "yyyy-MM-dd" );
 
-    public ExchangeRateServiceImpl( String filePath )
+    public ExchangeRateServiceImpl( String filePath ) throws Exception
     {
-        HistoricalExchangeRateData historicalExchangeRateData = new HistoricalExchangeRateData();
+        HistoricalExchangeRateData historicalExchangeRateData = HistoricalExchangeRateData.getInstance();
+
         exchangeRateData = historicalExchangeRateData.getHistoricalExchangeRateData( "C:\\Users\\sardarh\\Desktop\\Data\\sardar\\Formedix\\eurofxref-hist\\eurofxref-hist.csv" );
+
         availableCurrencies = historicalExchangeRateData.getTableFields();
+
     }
 
+    public List<String > getAvailableCurrencies()
+    {
+        return Arrays.asList(availableCurrencies);
+    }
 
 /*
     public List<String> getSupportedCurrencies() throws CurrencyExchangeRateException {
@@ -84,20 +90,20 @@ public class ExchangeRateServiceImpl implements ExchangeRateService
     }
     */
 
-    @Override
-    public String getExchangeRate( String sourceCurrencyCode, String targetCurrencyCode, String sourceAmount, String date ) throws CurrencyExchangeRateException
+    private BigDecimal getExchangeRateValue(String currencyCode, LocalDate date)
     {
-        LocalDate dttm = LocalDate.parse( date );
+        return  exchangeRateData.get( date ).stream()
+                                .filter( s -> s.getCurrencyCode().equals( currencyCode ) )
+                                .map( s -> s.getRate() )
+                                .findAny().get();
+    }
 
-        BigDecimal sourceCurrExchangeRate = exchangeRateData.get( dttm ).stream()
-                                                            .filter( s -> s.getCurrencyCode().equals( sourceCurrencyCode ) )
-                                                            .map( s -> s.getRate() )
-                                                            .findAny().get();
+    @Override
+    public String getExchangeRateConversion( String sourceCurrencyCode, String targetCurrencyCode, String sourceAmount, String date ) throws CurrencyExchangeRateException
+    {
+        BigDecimal sourceCurrExchangeRate = getExchangeRateValue( sourceCurrencyCode, getDate( date ) );
+        BigDecimal targetCurrExchangeRate = getExchangeRateValue( targetCurrencyCode, getDate( date ) );
 
-        BigDecimal targetCurrExchangeRate = exchangeRateData.get( dttm ).stream()
-                                                            .filter( s -> s.getCurrencyCode().equals( targetCurrencyCode ) )
-                                                            .map( s -> s.getRate() )
-                                                            .findAny().get();
 
         if ( sourceCurrExchangeRate == null && !StringUtils.equals( sourceCurrencyCode, "EUR" ) )
             throw new CurrencyExchangeRateException( "the exchange rate for the " + sourceCurrencyCode + " is not available on " + date );
@@ -126,14 +132,15 @@ public class ExchangeRateServiceImpl implements ExchangeRateService
     @Override
     public Map<String, String> getExchangeRate( String date ) throws CurrencyExchangeRateException
     {
-        LocalDate dttm = getDate(  date );
-        return Optional.ofNullable( exchangeRateData.get( dttm ) )
+        return Optional.ofNullable( exchangeRateData.get( getDate( date ) ) )
                        .orElseGet( Collections::emptyList )
                        .stream()
                        .collect( Collectors.toMap( s -> s.getCurrencyCode(), s -> s.getRate() != null ? s.getRate().toString() : "Rate not available" ) );
 
-        //  return exchangeRateData.get( dttm ).stream()
-        //                    .collect( Collectors.toMap( s -> s.getCurrencyCode(), s -> s.getRate() != null ? s.getRate().toString() : "Rate not available" ) );
+        /*  return exchangeRateData.get( dttm ).stream()
+                           .collect( Collectors.toMap( s -> s.getCurrencyCode(), s -> s.getRate() != null ? s.getRate().toString() : "Rate not available" ) );
+
+         */
     }
 
     @Override
@@ -161,25 +168,13 @@ public class ExchangeRateServiceImpl implements ExchangeRateService
                                             .max( comparator ).get();
 
         return Collections.singletonMap( rate.getDate().toString(), Collections.singletonMap( rate.getCurrencyCode(), rate.getRate().toString() ) );
-
-
-     /*   BigDecimal[] totalWithCount
-                = bigDecimals.stream()
-                             .filter(bd -> bd != null)
-                             .map(bd -> new BigDecimal[]{bd, BigDecimal.ONE})
-                             .reduce((a, b) -> new BigDecimal[]{a[0].add(b[0]), a[1].add(BigDecimal.ONE)})
-                             .get();
-
-      */
-
-        // return rate.toString();
     }
 
     @Override
     public String getAverageExchangeRate( String fromDate, String toDate, String currencyCode ) throws CurrencyExchangeRateException
     {
-        LocalDate fromDttm = LocalDate.parse( fromDate );
-        LocalDate toDttm = LocalDate.parse( toDate );
+        LocalDate fromDttm = getDate( fromDate );
+        LocalDate toDttm = getDate( toDate );
 
         /*
         exchangeData.entrySet().stream()

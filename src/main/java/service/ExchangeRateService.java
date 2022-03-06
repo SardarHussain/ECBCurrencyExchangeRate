@@ -1,9 +1,5 @@
 package service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Currency;
 import java.util.Map;
 import exception.CurrencyExchangeRateException;
 
@@ -25,7 +21,7 @@ public interface ExchangeRateService
      * @throws CurrencyExchangeRateException if anything goes wrong
      */
 
-    String getExchangeRate( String sourceCurrencyCode, String targetCurrencyCode, String sourceAmount, String date ) throws CurrencyExchangeRateException;
+    String getExchangeRateConversion( String sourceCurrencyCode, String targetCurrencyCode, String sourceAmount, String date ) throws CurrencyExchangeRateException;
 
     /**
      * Get the reference rate data for a given Date for all available currencies
