@@ -7,4 +7,5 @@
 # Editor-based HTTP Client requests
 /httpRequests/
 *.class
+compiler.xml
 target/*
